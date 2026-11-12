@@ -1,0 +1,23 @@
+"""Mapa de teoría y código: trazabilidad pedagógica, no certificación industrial."""
+COVERAGE = [
+ ('1-2','Arquitectura del compilador','compiler.compile_source','Implementado'),
+ ('1-2','Tokens, lexemas, regex, errores léxicos','compiler.lex','Implementado'),
+ ('1-2','AFD de identificadores y números','automata.identifier_dfa / number_dfa','Demostración didáctica'),
+ ('1-2','AFN, conversión AFN a AFD, minimización','docs/TEORIA_Y_LIMITACIONES.md','Solo teoría'),
+ ('3-4','Gramática y precedencia','automata.GRAMMAR / compiler.Parser','Implementado'),
+ ('3-4','Descenso recursivo Top-Down y AST','compiler.Parser / Node','Implementado'),
+ ('3-4','Bottom-Up LR/LALR','docs/TEORIA_Y_LIMITACIONES.md','Solo teoría'),
+ ('5','Tabla de símbolos, ámbitos de función','compiler.Semantic','Implementado'),
+ ('5','Ámbitos anidados arbitrarios y shadowing','docs/TEORIA_Y_LIMITACIONES.md','Parcial'),
+ ('6','Tipos, conversiones permitidas y errores','compiler.Semantic.expr','Implementado'),
+ ('7','IR, TAC y cuádruplas','compiler.IRBuilder / Quad','Implementado'),
+ ('8','Stack LIFO, Stack Frames y Heap','compiler.Memory','Simulación'),
+ ('9','Propagación y plegado de constantes','compiler.optimize','Implementado'),
+ ('9','Eliminación de temporales muertos','compiler.eliminate_dead_temporaries','Implementado'),
+ ('9','Optimización global y flujo de control','docs/TEORIA_Y_LIMITACIONES.md','Solo teoría'),
+ ('10','Selección de instrucciones, ensamblador','compiler.Backend','Implementado (ISA virtual)'),
+ ('10','Registros, liveness aproximado y Spill','compiler.Backend','Implementado'),
+ ('10','Coloreado de grafos','docs/TEORIA_Y_LIMITACIONES.md','Solo teoría'),
+ ('10','CPU virtual y RAM de Spill','virtual_cpu.VirtualCPU','Simulación'),
+ ('10','Pruebas del pipeline y errores','tests/','Implementado'),
+]

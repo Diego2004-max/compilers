@@ -1,0 +1,6 @@
+// Identificadores, números enteros y decimales
+int numero_1 = 12;
+float promedio = 3.5;
+string mensaje = "CompilaLab";
+print(numero_1 + promedio);
+print(mensaje);

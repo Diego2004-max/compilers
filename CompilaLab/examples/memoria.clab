@@ -1,0 +1,7 @@
+int puntero = new(1024);
+fn calcular() {
+    int total = 500;
+    print(total);
+}
+calcular();
+free(puntero);

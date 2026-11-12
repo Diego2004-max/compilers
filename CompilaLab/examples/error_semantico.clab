@@ -1,0 +1,3 @@
+int cantidad = 10;
+string nombre = "Hola";
+int resultado = cantidad + nombre;

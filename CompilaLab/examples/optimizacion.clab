@@ -1,0 +1,5 @@
+int a = 2;
+int b = 3;
+int resultado = a * b + 0;
+int no_usada = 999;
+print(resultado);

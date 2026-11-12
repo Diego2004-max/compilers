@@ -1,0 +1,3 @@
+int edad = 22;
+string nombre = "Ana";
+int error = edad + nombre;
