@@ -14,6 +14,8 @@
 - `new` y `free` no se admiten en el backend nativo actual; el sistema muestra un error explícito. Se mantienen en la vía didáctica.
 - Funciones con `return` y funciones que acceden a variables locales de `main` no están soportadas por el backend nativo actual.
 - El frontend no implementa todas las gramáticas y estrategias de parsing del curso (por ejemplo, LR/LALR), ni el asignador global por coloreado de grafos.
+- El lenguaje no tiene `if`/`while`, así que la IR no tiene saltos condicionales y todas las optimizaciones son locales (un solo bloque básico por función).
+- Los `float` se imprimen distinto en las dos rutas: la virtual muestra `3.0` (formato Python) y la nativa `3` (`%.15g` de C). Los `bool` ya se imprimen igual (`true`/`false`).
 - La interfaz gráfica Tkinter no se considera un frontend del compilador; es la interfaz de usuario.
 - No se puede garantizar el 100 % de la teoría de las diapositivas como funcionalidades ejecutables con el alcance actual.
 

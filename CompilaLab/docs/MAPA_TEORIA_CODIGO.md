@@ -1,48 +1,43 @@
-# CompilaLab — Mapa teoría ↔ código (auditoría inicial)
+# CompilaLab v11 — Mapa teoría ↔ código
 
-**Estados:** IMPLEMENTADO = existe comportamiento verificable; PARCIAL = solo subconjunto/simulación; PENDIENTE = no implementado. Este documento es una auditoría, no una afirmación de cobertura total.
+**Estados:** IMPLEMENTADO = comportamiento ejecutable con prueba; SIMULACIÓN = modelo educativo; PARCIAL = subconjunto; SOLO TEORÍA = se explica, no se ejecuta.
+Los comentarios dentro del código usan las mismas referencias: `[S#]` = semana del curso y `(?)` = pregunta probable en la sustentación.
 
-| Semana | Tema del curso | Archivo / función | Estado | Próximo paso |
+| Semana | Tema del curso | Archivo / función | Estado | Prueba que lo demuestra |
 |---|---|---|---|---|
-| 1 | Pipeline del compilador | `compiler.py:compile_source` | IMPLEMENTADO | Separar módulos por etapas |
-| 2 | Tokens, lexemas y regex | `compiler.py:PATTERN`, `lex` | IMPLEMENTADO | Añadir visualización de autómata y casos límite |
-| 2 | Autómatas léxicos | — | PENDIENTE | DFA didáctico con transiciones |
-| 3 | Gramática BNF/EBNF | `Parser` (gramática implícita) | PARCIAL | Documentar gramática formal |
-| 3–4 | Parser Top-Down y AST | `Parser`, `Node` | IMPLEMENTADO | Dibujar AST como árbol |
-| 4 | Bottom-Up, comparación de métodos | — | PENDIENTE | Demostración comparativa sin cambiar parser principal |
-| 5 | Tabla de símbolos y scopes | `Semantic` | PARCIAL | Bloques anidados y visibilidad real |
-| 6 | Tipos y errores semánticos | `Semantic.expr`, `Semantic.block` | PARCIAL | Más operaciones y punteros tipados |
-| 7 | IR / TAC / cuádruplas | `IRBuilder`, `Quad` | IMPLEMENTADO | Saltos y control de flujo |
-| 8 | Stack frames y LIFO | `Memory.push/pop`, `Interpreter` | IMPLEMENTADO (simulado) | Recursión con límite |
-| 8 | Heap / alloc / free | `Memory.alloc/free` | IMPLEMENTADO (simulado) | Liberación y referencias inválidas |
-| 8 | Segmentos Texto/Data/Stack/Heap | — | PARCIAL | Visualizador de segmentos |
-| 9 | Propagación y plegado constantes | `optimize` | IMPLEMENTADO (local) | Optimización por bloques básicos |
-| 9 | Simplificación algebraica | — | PENDIENTE | Reglas `x+0`, `x*1`, etc. |
-| 9 | Código muerto | — | PENDIENTE | Análisis de usos y efectos laterales |
-| 10 | Código objetivo | `Backend.generate` | IMPLEMENTADO (ISA virtual) | Máquina virtual para ejecutar ASM |
-| 10 | Asignación de registros | `Backend.reg` | PARCIAL | Liveness y estrategia de selección sólida |
-| 10 | Spill / STORE / LOAD | `Backend.reg` | PARCIAL | Validación semántica del ensamblador emitido |
-| 10 | Coloreado de grafos | — | PENDIENTE | Comparador didáctico opcional |
+| 1 | Pipeline por fases | `compiler.py:compile_source` | IMPLEMENTADO | todas |
+| 1 | Clasificación de errores por fase | `CompileError`, `result['error_phase']` | IMPLEMENTADO | `test_v11.fails(...)` |
+| 2 | Tokens, lexemas, patrones (regex + named groups) | `PATTERN`, `lex` | IMPLEMENTADO | `test_lexical`, `test_keyword_prefix_is_identifier` |
+| 2 | Recuperación de errores léxicos (modo pánico) | `lex` (lista `errors`) | IMPLEMENTADO | `test_all_lexical_errors_reported` |
+| 2 | Reto S2: comentarios `//` `/* */`, cadenas, `&& \|\| !` | `PATTERN` | IMPLEMENTADO | `test_block_comment_keeps_line_numbers` |
+| 2 | AFD por matriz de transición | `automata.py:run_dfa`, `*_TABLE` | IMPLEMENTADO (didáctico) | `test_dfa_table_rejects` |
+| 2 | Thompson / subconjuntos / Hopcroft | — | SOLO TEORÍA | — |
+| 3 | Gramática EBNF | `automata.GRAMMAR` | IMPLEMENTADO | `test_grammar` |
+| 3–4 | Descenso recursivo y AST | `Parser`, `Node` | IMPLEMENTADO | `test_precedence`, `test_parentheses` |
+| 4 | Precedencia y asociatividad izquierda | `Parser.binary_level` | IMPLEMENTADO | `test_left_associativity`, `test_logical_precedence` |
+| 4 | Bottom-Up (shift-reduce, LR/LALR) | — | SOLO TEORÍA | — |
+| 5 | Pila de ámbitos y `lookup` | `Semantic.scopes`, `Semantic.lookup` | IMPLEMENTADO | `test_undefined`, `test_shadowing` |
+| 5 | Redeclaración y shadowing | `Semantic.block` | IMPLEMENTADO | `test_scope_redeclaration_rejected` |
+| 5 | Ámbitos de bloque `if`/`while` | — | PARCIAL (el lenguaje no tiene bloques) | — |
+| 6 | Inferencia, equivalencia, coerción int→float | `Semantic.expr`, `Semantic.compatible` | IMPLEMENTADO | `test_type_error`, `test_float` |
+| 6 | División por cero literal (estática) | `Semantic.expr` | IMPLEMENTADO | `test_literal_division_by_zero_is_semantic` |
+| 7 | TAC, cuádruplas, temporales | `IRBuilder`, `Quad` | IMPLEMENTADO | `test_correct` |
+| 7 | Saltos/GOTO en la IR | — | SOLO TEORÍA | — |
+| 8 | Stack frames LIFO, Heap, doble free | `Memory` | SIMULACIÓN | `test_memory`, `test_double_free` |
+| 9 | Simplificación algebraica y reducción de fuerza | `simplify_algebraic` | IMPLEMENTADO | `test_algebraic_simplification` |
+| 9 | Propagación y plegado de constantes | `optimize` | IMPLEMENTADO | `test_constant_optimization` |
+| 9 | Código muerto (temporales) | `eliminate_dead_temporaries` | IMPLEMENTADO | `test_dead_temporaries` |
+| 9 | Optimización global sobre CFG | — | SOLO TEORÍA | — |
+| 10 | Selección de instrucciones | `Backend.generate`, `OPCODES` | IMPLEMENTADO (ISA virtual) | `test_arithmetic` |
+| 10 | Asignación local de registros + Spill | `Backend.reg`, `release_dead` | IMPLEMENTADO | `test_spill_cpu_ram` |
+| 10 | Caller-saved antes de CALL | `Backend.generate` (rama CALL) | IMPLEMENTADO | `test_memory_and_call` |
+| 10 | Coloreado de grafos | — | SOLO TEORÍA | — |
+| 10 | Ejecución fetch-decode-execute | `virtual_cpu.VirtualCPU` | SIMULACIÓN | `test_cpu_virtual.*` |
+| 10 | Ejecutable real (C11 + GCC/Clang) | `native_backend.build_native` | IMPLEMENTADO (parcial) | `test_native_backend.*` |
 
-## Condición para afirmar que está terminado
+## Arquitectura
 
-1. El caso correcto produce el mismo resultado en intérprete TAC y máquina virtual ASM.
-2. Cada error léxico, sintáctico y semántico indica línea y columna cuando sea posible.
-3. Los escenarios de Spill se ejecutan y verifican, no solo muestran trazas.
-4. Cada tema del curso está enlazado a código, una prueba y una explicación para sustentación.
+`gui.py` / `main.py` (interfaces de usuario) → `compiler.compile_source` (orquestador) →
+front-end (`lex`, `Parser`, `Semantic`) → middle-end (`IRBuilder`, `optimize`) → back-end (`Backend`, `VirtualCPU` o `native_backend`).
 
-## Arquitectura objetivo
-
-`gui.py` (interfaz) → `compiler_service` (orquestación) → `compiler/frontend` (lexer/parser/semántica) → `compiler/middle_end` (IR/optimizador) → `compiler/backend` (registros, spill, memoria, código objetivo).
-
-**Nota:** los nombres frontend/backend dentro de `compiler/` se refieren a fases de compilación; la GUI es el frontend de la aplicación.
-
-## Actualización v3 — Ejecución del código objetivo
-
-- `virtual_cpu.py`: decodificación y ejecución de `LI`, `MOV`, `STORE`, `LOAD`, `ADD`, `SUB`, `MUL`, `DIV`, comparaciones, `PRINT`, `ENTER`, `LEAVE`, `CALL`, `RET`, `ALLOC` y `FREE`.
-- `compiler.py`, `compile_source()`: compara automáticamente salida de la CPU virtual con la del intérprete TAC.
-- `compiler.py`, `Backend.generate()`: conservación de valores vivos alrededor de `CALL` mediante slots RAM, evitando la pérdida de punteros globales.
-- `gui.py`: nueva pestaña **CPU virtual** con traza, registros, RAM y verificación de salida.
-- `tests/test_cpu_virtual.py`: pruebas de Spill, llamadas, Heap, aritmética, comparación y optimización.
-
-La pila de marcos es lógica; no se debe presentar como un stack físico modelado byte a byte. El archivo `virtual_cpu.py` no ejecuta código de máquina nativo.
+Los nombres front-end/back-end se refieren a **fases de compilación**; la GUI es solo la interfaz.

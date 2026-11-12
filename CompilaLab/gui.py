@@ -1,4 +1,10 @@
-"""Interfaz local Tkinter, sin dependencias externas."""
+"""Interfaz gráfica (Tkinter, sin dependencias externas).
+
+(?) ¿Esta GUI es el "front-end" del compilador? NO. Front-end del compilador =
+    léxico + sintaxis + semántica (compiler.py). Esto es la interfaz de USUARIO:
+    solo llama a compile_source() y pinta el diccionario que devuelve. Se podría
+    reemplazar por main.py (consola) sin tocar una línea del compilador.
+"""
 import json
 import tkinter as tk
 from tkinter import ttk, filedialog
@@ -8,7 +14,7 @@ from coverage import COVERAGE
 from native_backend import build_native, NativeError, find_compiler
 
 BASE=Path(__file__).resolve().parent
-root=tk.Tk(); root.title('CompilaLab v10 | Laboratorio integral de compiladores'); root.geometry('1420x850')
+root=tk.Tk(); root.title('CompilaLab v11 | Laboratorio integral de compiladores'); root.geometry('1420x850')
 root.configure(bg='#101b2c')
 style=ttk.Style(); style.theme_use('clam')
 style.configure('TNotebook',background='#101b2c'); style.configure('TNotebook.Tab',padding=(15,9))
@@ -49,13 +55,14 @@ def advance_step(delta):
     step_index.set(step_index.get()+delta); show_step(); notebook.select(list(views).index('Paso a paso'))
 
 def compile_action():
+    # Toda la compilación ocurre aquí; el resto de la función solo reparte el resultado en pestañas.
     r=compile_source(editor.get('1.0','end-1c'),reg.get(),optimize.get())
     last_result.clear(); last_result.update(r); step_index.set(0)
     data={'Tokens':r.get('tokens',[]),'Autómatas':r.get('automata',[]),'Gramática':r.get('grammar',''),'AST':r.get('ast',{}),'Símbolos':r.get('symbols',[]),'TAC':r.get('tac',[]),'Optimización':{'notas':r.get('optimizations',[]),'tac':r.get('optimized_tac',[])},'Ensamblador':r.get('assembly',[]),'Spill':{'cantidad':r.get('spill_count',0),'eventos':r.get('register_events',[]),'slots':r.get('register_slots',{})},'Memoria':{'eventos':r.get('memory_events',[]),'variables':r.get('globals',{}),'heap_pendiente':r.get('heap_remaining',{})},'CPU virtual':{'salida_cpu':r.get('cpu_output',[]),'coincide_con_tac':r.get('cpu_matches_tac'),'registros_finales':r.get('cpu_registers',{}),'ram_spill':r.get('cpu_ram',{}),'heap_final':r.get('cpu_heap_remaining',{}),'eventos_memoria':r.get('cpu_memory_events',[]),'traza':r.get('cpu_trace',[])},'Paso a paso':{},'Cobertura':[{'semana':week,'concepto':concept,'ubicacion':location,'estado':status} for week,concept,location,status in COVERAGE],'Salida':r.get('output',[])}
     for key,value in data.items():
         w=views[key]; w.delete('1.0','end'); w.insert('1.0','\n'.join(map(str,value)) if isinstance(value,list) and key not in ('Tokens','Símbolos') else json.dumps(value,ensure_ascii=False,indent=2))
     show_step()
-    status.set(('✓ Compilación exitosa · Spill: '+str(r.get('spill_count',0))) if r['success'] else '✗ '+r['error'])
+    status.set(('✓ Compilación exitosa · Spill: '+str(r.get('spill_count',0))) if r['success'] else '✗ ['+str(r.get('error_phase'))+'] '+r['error'])
     notebook.select(list(views).index('Salida') if r['success'] else 0)
 
 def native_action():
@@ -84,7 +91,7 @@ def example(name):
 ttk.Button(bar,text='▶ Compilar y ejecutar',command=compile_action).pack(side='left',padx=8)
 ttk.Button(bar,text='▶ Ejecutable REAL (GCC/Clang)',command=native_action).pack(side='left',padx=5)
 ttk.Button(bar,text='Abrir archivo',command=open_action).pack(side='left',padx=8)
-for label,name in [('Correcto','correcto.clab'),('Spill','spill.clab'),('Tipos','tipos_error.clab'),('Stack / Heap','memoria.clab'),('Optimiz.','optimizacion.clab')]:
+for label,name in [('Correcto','correcto.clab'),('Spill','spill.clab'),('Tipos','tipos_error.clab'),('Léxico','errores_lexicos.clab'),('Stack / Heap','memoria.clab'),('Optimiz.','optimizacion.clab'),('Algebraica','algebraica.clab'),('Lógica','logica.clab')]:
     ttk.Button(bar,text=label,command=lambda n=name:example(n)).pack(side='left',padx=3)
 ttk.Button(bar,text='◀ CPU',command=lambda:advance_step(-1)).pack(side='left',padx=3)
 ttk.Button(bar,text='CPU ▶',command=lambda:advance_step(1)).pack(side='left',padx=3)

@@ -1,4 +1,4 @@
-# CompilaLab v10 — Proyecto integral de Construcción de Compiladores
+# CompilaLab v11 — Proyecto integral de Construcción de Compiladores
 
 Aplicación educativa de escritorio que reúne el pipeline **código fuente → tokens → AST → análisis semántico → TAC → optimización → ensamblador virtual → CPU/RAM virtuales**.
 
@@ -19,7 +19,7 @@ python -m unittest discover -s tests -v
 
 ## Uso
 
-1. Elegir ejemplo: **Correcto**, **Spill**, **Tipos**, **Stack / Heap** u **Optimiz.**
+1. Elegir ejemplo: **Correcto**, **Spill**, **Tipos**, **Léxico**, **Stack / Heap**, **Optimiz.**, **Algebraica** o **Lógica**.
 2. Establecer registros en **3**; desmarcar optimización para demostrar Spill.
 3. Presionar **Compilar y ejecutar**.
 4. Inspeccionar las pestañas Tokens, Autómatas, Gramática, AST, Símbolos, TAC, Optimización, Ensamblador, Spill, Memoria, CPU virtual, Paso a paso, Cobertura y Salida.
@@ -47,7 +47,7 @@ int resultado = a + b * c;
 print(resultado);
 ```
 
-Admite declaraciones `int`, `float`, `string`, `bool`, asignaciones, expresiones aritméticas y comparaciones, `print`, funciones sin parámetros, `return`, `new(n)` y `free(p)`. No es Java completo.
+Admite declaraciones `int`, `float`, `string`, `bool`, asignaciones, expresiones aritméticas, comparaciones y lógicas (`&&`, `||`, `!`), comentarios `//` y `/* */`, `print`, funciones sin parámetros, `return`, `new(n)` y `free(p)`. No es Java completo.
 
 ## Resultado de referencia
 
@@ -55,7 +55,7 @@ El ejemplo `spill.clab` imprime `92` y, con tres registros sin optimización, ge
 
 ## Advertencia sobre el alcance
 
-**v10** identifica la entrega integral para estudiar el curso, **no significa que todos los algoritmos teóricos estén implementados**. Ver `docs/TEORIA_Y_LIMITACIONES.md` y la pestaña Cobertura: se diferencian explícitamente implementaciones, simulaciones, coberturas parciales y temas solo teóricos.
+**v11** identifica la entrega integral para estudiar el curso, **no significa que todos los algoritmos teóricos estén implementados**. Ver `docs/TEORIA_Y_LIMITACIONES.md` y la pestaña Cobertura: se diferencian explícitamente implementaciones, simulaciones, coberturas parciales y temas solo teóricos.
 
 ## Ampliación: backend de ejecutables reales
 
@@ -64,5 +64,7 @@ El botón **«Ejecutable REAL (GCC/Clang)»** añade una ruta de compilación na
 **Limitaciones importantes:** la generación de código nativo todavía no admite `new/free`, funciones con retorno ni funciones que lean variables locales de `main`. La interfaz didáctica de CPU/RAM y Spill continúa siendo virtual. Consulta `docs/ESTADO_REAL_Y_PENDIENTES.md` antes de presentar el proyecto. No se afirma que todas las técnicas del semestre estén implementadas.
 
 ## Guía comentada
+
+**Lo principal para estudiar son los comentarios dentro del código:** `[S#]` indica la semana del curso y `(?)` una pregunta probable de sustentación con la idea clave para responderla.
 
 `docs/CODIGO_LINEA_POR_LINEA.md` contiene cada línea no vacía del código Python con una explicación asociada. Se genera mediante `python generar_guia_comentada.py`. Es una guía de lectura; algunas explicaciones son generales y requieren contrastarse con la función completa.

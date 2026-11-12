@@ -1,0 +1,12 @@
+// Simplificación algebraica y reducción de fuerza (Semana 9).
+// Después de una llamada, el optimizador local ya no "conoce" el valor de base
+// (la llamada es una caja negra), así que no puede plegarlo: aquí entran las identidades.
+int base = 7;
+fn aviso() {
+    print(0);
+}
+aviso();
+int a = base + 0;
+int b = 1 * a;
+int c = b * 2;
+print(c);

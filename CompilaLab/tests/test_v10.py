@@ -28,7 +28,7 @@ class ComprehensiveTests(unittest.TestCase):
     def test_unary(self): self.compile_ok('print(-3 + 4);',['1'])
     def test_float(self): self.compile_ok('float a = 2.5; print(a + 0.5);',['3.0'])
     def test_string(self): self.compile_ok('string a = "Hola"; print(a);',['Hola'])
-    def test_boolean(self): self.compile_ok('bool a = 3 <= 4; print(a);',['True'])
+    def test_boolean(self): self.compile_ok('bool a = 3 <= 4; print(a);',['true'])
     def test_lex_error_location(self):
         r=compile_source('int a = 1;\nint b = @;')
         self.assertFalse(r['success']); self.assertIn('línea 2',r['error'])

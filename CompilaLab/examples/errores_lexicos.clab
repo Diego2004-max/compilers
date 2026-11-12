@@ -1,1 +1,4 @@
 int valor = 3 @ 2;
+/* El lexer no se detiene en el primer error:
+   reporta todos los caracteres inválidos de una vez. */
+float otro = 1.5 # 2;

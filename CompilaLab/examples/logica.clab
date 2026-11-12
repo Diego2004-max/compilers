@@ -1,0 +1,7 @@
+// Operadores lógicos (reto de la Semana 2) y precedencia: ! > && > ||
+int edad = 20;
+bool mayor = edad >= 18;
+bool estudiante = true;
+bool descuento = mayor && !estudiante || edad < 12;
+print(mayor);
+print(descuento);

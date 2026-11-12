@@ -2,6 +2,14 @@
 
 El resultado es un ejecutable de máquina REAL, no una CPU simulada.
 La selección de registros físicos corresponde al compilador C instalado.
+
+(?) ¿Entonces CompilaLab "usa" GCC? Solo en esta ruta opcional. Es la técnica
+    "source-to-source" (transpilar a C) que usaron los primeros compiladores de C++
+    (Cfront) y que hoy usan Nim o Vala: C funciona como una IR portátil y GCC hace
+    el back-end (selección de instrucciones, registros reales, spill real).
+    Para ver ese back-end:  gcc -S -O0 programa.c  → programa.s (x86/ARM real).
+Note que se parte del AST y NO del TAC: el TAC ya perdió los tipos que C necesita
+para declarar variables (int64_t, double, const char *).
 """
 from __future__ import annotations
 import os
@@ -47,11 +55,15 @@ class CEmitter:
             return 'true' if node.value else 'false'
         if node.kind == 'variable':
             return node.value
+        if node.kind == 'not':
+            return f'(!{self.expression(node.children[0])})'
         if node.kind == 'binary':
             left, right = node.children
             if node.value == '/':
                 # CompilaLab define división real incluso para dos enteros.
                 return f'((double)({self.expression(left)}) / (double)({self.expression(right)}))'
+            # En C, "a" == "b" compara DIRECCIONES de memoria, no el texto:
+            # la igualdad de cadenas exige strcmp para conservar la semántica del lenguaje.
             if self.infer(left) == 'string' and self.infer(right) == 'string' and node.value in ('==', '!='):
                 test = '== 0' if node.value == '==' else '!= 0'
                 return f'(strcmp({self.expression(left)}, {self.expression(right)}) {test})'
@@ -69,8 +81,10 @@ class CEmitter:
             return 'bool'
         if node.kind == 'variable':
             return self.lookup(node.value)
+        if node.kind == 'not':
+            return 'bool'
         if node.kind == 'binary':
-            if node.value in ('==', '!=', '<', '>', '<=', '>='):
+            if node.value in ('==', '!=', '<', '>', '<=', '>=', '&&', '||'):
                 return 'bool'
             left = self.infer(node.children[0]); right = self.infer(node.children[1])
             return 'float' if 'float' in (left, right) or node.value == '/' else 'int'
@@ -80,6 +94,8 @@ class CEmitter:
         if node.kind == 'declare':
             name, typ = node.value['name'], node.value['type']
             self.types[-1][name] = typ
+            # Mapeo de tipos fuente → tipos C. int64_t fija el ancho (64 bits) para
+            # que el resultado no dependa de la plataforma, como sí pasaría con "int".
             ctype = {'int': 'int64_t', 'float': 'double', 'bool': 'bool', 'string': 'const char *'}[typ]
             self.write(f'{ctype} {name} = {self.expression(node.children[0])};')
         elif node.kind == 'assign':

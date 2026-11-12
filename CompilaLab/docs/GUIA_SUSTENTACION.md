@@ -49,4 +49,14 @@
 
 **¿Cómo validan el resultado?** Se ejecuta el TAC y el ensamblador virtual por separado y se comparan las salidas.
 
-**¿Qué no implementa el proyecto?** Java completo, LR/LALR, SSA, coloreado de grafos, hardware físico y algunas estructuras de control.
+**¿Cómo se maneja un error léxico?** En modo pánico: se anota y el escaneo continúa, así el mensaje reporta todos los caracteres inválidos a la vez.
+
+**¿Por qué `int x = 1 / 0;` es error semántico pero `1 / y` no?** El divisor literal se conoce al compilar; el valor de `y` solo se conoce al ejecutar.
+
+**¿Qué es la reducción de fuerza?** Cambiar una operación cara por una equivalente más barata: `x * 2` pasa a `x + x`.
+
+**¿Por qué no se simplifica `x + 0.0`?** Porque si `x` es `int`, el resultado cambiaría a `float` y se imprimiría distinto: una optimización no puede cambiar lo observable.
+
+**¿Qué es caller-saved?** Antes de un `CALL`, el llamador guarda en RAM los valores que necesitará después, porque la función puede usar cualquier registro.
+
+**¿Qué no implementa el proyecto?** Java completo, LR/LALR, SSA, coloreado de grafos, `if`/`while` con saltos en la IR, hardware físico y parámetros de funciones.

@@ -39,6 +39,6 @@ class VirtualCPUTests(unittest.TestCase):
         self.check('int a = 10; print(a); a = a + 1; print(a);', ['10','11'])
 
     def test_comparison(self):
-        self.check('bool a = 3 < 4; print(a);', ['True'])
+        self.check('bool a = 3 < 4; print(a);', ['true'])
 
 if __name__ == '__main__': unittest.main()
