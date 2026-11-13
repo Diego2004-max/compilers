@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CompilaLab · panel del compilador</title>
+<link rel="stylesheet" href="app.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><b>CompilaLab</b><span>v11 · compilador educativo</span></div>
+  <nav class="tabs" role="tablist" aria-label="Secciones">
+    <button role="tab" aria-selected="true" aria-controls="view-pipeline" data-view="pipeline">Pipeline</button>
+    <button role="tab" aria-selected="false" aria-controls="view-bench" data-view="bench">Rendimiento</button>
+    <button role="tab" aria-selected="false" aria-controls="view-arch" data-view="arch">Arquitectura</button>
+  </nav>
+  <div class="sysinfo" id="sysinfo"></div>
+</header>
+
+<main>
+  <!-- ═══ PIPELINE ═══ -->
+  <section class="view" id="view-pipeline" role="tabpanel">
+    <h2 class="sr-only">Pipeline del compilador</h2>
+    <ol class="cinta" id="cinta" role="tablist" aria-label="Fases del compilador"></ol>
+
+    <div class="work">
+      <div class="sheet source">
+        <div class="controls">
+          <label class="field">Programa de ejemplo
+            <select id="example"></select>
+          </label>
+          <label class="field">Registros
+            <input type="number" id="registers" min="3" max="16" value="3">
+          </label>
+          <label class="check"><input type="checkbox" id="optimized"> Optimizar</label>
+        </div>
+        <div class="editor">
+          <pre class="gutter" id="gutter" aria-hidden="true">1</pre>
+          <textarea id="code" spellcheck="false" aria-label="Código fuente"></textarea>
+        </div>
+        <button class="primary" id="compile">Compilar y ejecutar</button>
+        <div class="status" id="status" role="status">Elige un ejemplo o escribe tu programa y compílalo.</div>
+        <div>
+          <div class="detail-head"><h3>Salida del programa</h3><span id="match"></span></div>
+          <pre class="output" id="output"></pre>
+        </div>
+      </div>
+
+      <div class="sheet detail" id="detail" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- ═══ RENDIMIENTO ═══ -->
+  <section class="view" id="view-bench" role="tabpanel" hidden>
+    <div class="bench-bar">
+      <div>
+        <h2>Rendimiento medido en este equipo</h2>
+        <p class="muted small" style="margin:4px 0 0">Cada fase se cronometra con <code>time.perf_counter</code>; se muestra la mediana de varias corridas para ignorar picos del sistema.</p>
+      </div>
+      <label class="field">Programa
+        <select id="bench-example"></select>
+      </label>
+      <label class="field">Repeticiones
+        <input type="number" id="bench-repeats" min="1" max="60" value="15">
+      </label>
+      <button class="primary" id="bench-run">Medir rendimiento</button>
+    </div>
+    <div id="bench-out"><p class="empty">Pulsa «Medir rendimiento» para cronometrar el compilador.</p></div>
+  </section>
+
+  <!-- ═══ ARQUITECTURA ═══ -->
+  <section class="view" id="view-arch" role="tabpanel" hidden>
+    <div id="arch-out"></div>
+  </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -11,6 +11,18 @@ python gui.py
 
 No requiere paquetes externos; usa `tkinter`, `unittest` y bibliotecas estándar de Python.
 
+## Panel web para la presentación
+
+```powershell
+python dashboard.py
+```
+
+Abre el navegador en `http://127.0.0.1:8765` (sin internet ni paquetes externos) con tres secciones:
+
+- **Pipeline:** cinta de 7 fases con sus métricas; tokens y AFD, árbol AST dibujado, tabla de símbolos, cuádruplas, optimización antes/después, ensamblador con spills y CPU paso a paso (flechas ← → del teclado). Los errores marcan la línea y la columna con `^`.
+- **Rendimiento:** tiempo por fase (mediana), spills según número de registros, tamaño del código por programa y escalabilidad del back-end.
+- **Arquitectura:** diagrama de módulos, tamaño del código, tecnologías detectadas en el equipo y decisiones de diseño.
+
 ## Ejecutar pruebas
 
 ```powershell
@@ -27,7 +39,8 @@ python -m unittest discover -s tests -v
 
 ## Estructura
 
-- `gui.py`: interfaz gráfica de usuario.
+- `gui.py`: interfaz gráfica de escritorio (Tkinter).
+- `dashboard.py` + `web/`: panel web local para la presentación.
 - `compiler.py`: lexer, parser, AST, semántica, TAC, optimizador, asignación de registros, Spill, memoria y compilación.
 - `automata.py`: AFD didácticos para identificadores/números y gramática visible.
 - `virtual_cpu.py`: CPU virtual y ejecución del ensamblador.

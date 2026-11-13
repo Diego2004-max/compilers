@@ -17,6 +17,7 @@ Convención de comentarios de estudio:
 from __future__ import annotations
 
 import re
+import time
 from collections import Counter
 from dataclasses import dataclass, asdict
 
@@ -976,30 +977,47 @@ def compile_source(source, registers=3, optimized=False, run=True):
     """Ejecuta el pipeline completo. Nunca lanza excepciones hacia la GUI: cualquier
     error queda en result['error'] (S10, checklist: "sin detener abruptamente")."""
     result = {'source': source, 'error': None, 'error_phase': None}
+    timings = result['timings'] = {}         # ms por fase (perf_counter): lo usa el panel de rendimiento
+    clock = [time.perf_counter()]
+
+    def lap(phase):
+        now = time.perf_counter()
+        timings[phase] = (now - clock[0]) * 1000
+        clock[0] = now
+
     try:
         ts = lex(source)
+        lap('lexico')
         result['tokens'] = [asdict(t) for t in ts]
         from automata import analyze_automata, GRAMMAR   # import tardío: automata no depende de compiler
         result['automata'] = analyze_automata(ts)
         result['grammar'] = GRAMMAR
+        clock[0] = time.perf_counter()         # la traza de AFD es didáctica: no cuenta como tiempo del lexer
 
         ast = Parser(ts).parse()
         result['ast'] = ast.json()
+        lap('sintactico')
 
         semantic = Semantic()
         result['symbols'] = semantic.check(ast)
+        lap('semantico')
 
         raw = IRBuilder().build(ast)
+        lap('ir')
         result['tac'] = [q.show() for q in raw]
+        result['raw_quads'] = [asdict(q) for q in raw]
+        clock[0] = time.perf_counter()
         # Se optimiza una COPIA para poder mostrar lado a lado TAC original vs optimizado.
         opt, notes = optimize([Quad(**asdict(q)) for q in raw])
         result['optimized_tac'] = [q.show() for q in opt]
         result['optimizations'] = notes
+        lap('optimizacion')
 
         chosen = opt if optimized else raw
         result['quads'] = [asdict(q) for q in chosen]
         backend = Backend(registers)
         result['assembly'] = backend.generate(chosen)
+        lap('backend')
         result['register_events'] = backend.events
         result['spill_count'] = backend.spills
         result['register_slots'] = {name: hex(addr) for name, addr in backend.slots.items()}
@@ -1007,6 +1025,7 @@ def compile_source(source, registers=3, optimized=False, run=True):
         if run:
             vm = Interpreter(chosen)
             result['output'] = vm.execute()
+            lap('interprete')
             result['memory_events'] = vm.memory.events
             result['globals'] = vm.globals
             result['heap_remaining'] = vm.memory.heap
@@ -1014,6 +1033,7 @@ def compile_source(source, registers=3, optimized=False, run=True):
             from virtual_cpu import VirtualCPU             # import tardío: virtual_cpu importa compiler
             cpu = VirtualCPU(result['assembly'], registers)
             result['cpu_output'] = cpu.execute()
+            lap('cpu')
             result['cpu_trace'] = cpu.trace
             result['cpu_registers'] = cpu.registers
             result['cpu_ram'] = {hex(k): v for k, v in cpu.ram.items()}
